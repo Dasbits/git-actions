@@ -1,20 +1,29 @@
-name: Preparant per producció
-run-name: ${{ github.actor }} està pujant l'aplicació a PROD 🚀
-on: [push]
-jobs:
-  Pujar-a-produccio-amb-SCP:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Obtenint el codi del respositori
-        uses: actions/checkout@v4
+name: Node CI
 
-      - name: scp a produccio
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
-          chmod 600 ~/prod_key.pem
-          cd ${{ github.workspace }}
-          cd web
-          npm run build
-          scp -r -o stricthostkeychecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ./dist/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.TARGET }}
-          
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '21.x'
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run build task
+      run: npm run build --if-present
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@main
+      with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc -i --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.TARGET }}
+          EXCLUDE: "/dist/, /node_modules/"
