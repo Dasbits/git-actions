@@ -15,16 +15,16 @@ jobs:
         node-version: '21.x'
     - name: Install npm dependencies
       run: npm install
-      working-directory: web/project-vue
+      working-directory: ./web/project-vue
     - name: Run build task
       run: npm run build --if-present
-      working-directory: web/project-vue
+      working-directory: ./web/project-vue
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
       with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "web/vue-project/dist/"
+          SOURCE: "vue-project/dist/"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.TARGET }}
