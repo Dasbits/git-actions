@@ -23,7 +23,6 @@ export default {
   methods: {
     clickButton(item) {
       this.message = 'El butón presionat es el ' + item
-      console.log(buttonPressed)
     }
   }
 }
