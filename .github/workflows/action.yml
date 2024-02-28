@@ -17,6 +17,8 @@ jobs:
       run: npm install
       working-directory: ./vue-project
     - uses: stefanoeb/eslint-action@1.0.2
+      with:
+        files: vue-project/src/
     - name: Run build task
       run: npm run build --if-present
       working-directory: ./vue-project
